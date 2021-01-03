@@ -12,6 +12,7 @@
   </style>
   <script src="/js/jquery.js"></script>
   <script src="/js/jquery-ui.js"></script>
+  <script src="/js/widget-add_condition.js"></script>
   <script>
   $( function() {
     var dao =[];
@@ -49,31 +50,9 @@
       dialog_cubic_equation.dialog("option", "width", 800);
       dialog_cubic_equation.dialog("open");
     });
-    $("#button_add_conditions").button().on("click", function() {
-      var sep = $("<br/>");
-      var condition_select = $("<select  />");
-      condition_select.attr("id", "conditions[]");
-      condition_select.change(function(){
-        for(i=0;i<thermal_devices_dao_keyprefix.length;i++) {
-          var dao = thermal_devices_dao_keyprefix[i];
-	  if(this.value == dao.TDEV) {
-            for(j=0;j<dao.DAO_LIST.length;j++) {
-              console.log(dao.DAO_LIST[j]);
-            }
-	  }
-        }
-      });
-      $(thermal_devices_dao_keyprefix).each(function() {
-        var condition_option = $("<option />");
-        condition_option.html(this.TDEV);
-        condition_option.val(this.TDEV);
-        condition_select.append(condition_option);
-      });
-      $("#place_holder_conditions").append(condition_select);
-      $("#place_holder_conditions").append(sep);
-    });
     $( "#sortable" ).sortable();
     $( "#sortable" ).enableSelection();
+    $( "#place_holder_conditions" ).add_condition();
   } );
   </script>
 </head>
@@ -84,8 +63,7 @@
   <div id="dialog_cubic_equation"  style="width:800px">
     <form>
     <label>Conditions</label>
-    <a id="button_add_conditions">+</a>
-    </br><div id="place_holder_conditions"></div>
+    <div id="place_holder_conditions"></div>
     </br><label>Parameters</label></br>
       <table>
         <tr>
