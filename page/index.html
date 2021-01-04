@@ -4,7 +4,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Thermal Forms</title>
-  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <link rel="stylesheet" type="text/css" href="/css/jquery-ui.css">
   <style>
   #sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }
@@ -14,18 +13,11 @@
   <script src="/js/jquery.js"></script>
   <script src="/js/jquery-ui.js"></script>
   <script src="/js/widget-add_condition.js"></script>
+  <script src="/js/widget-add_parameter_cubic_equation.js"></script>
+  <script src="/js/widget-add_result.js"></script>
   <script>
   $( function() {
     var dao = {};
-    var thermal_devices_dao_keyprefix = [
-	    {TDEV:"na", DAO_LIST:[]},
-	    {TDEV:"common_thermal_device_event_status", DAO_LIST:["ipmi_ready", "power_good", "post_init", "post_completed", "dp_ready"]},
-	    {TDEV:"common_thermal_device_ambient", DAO_LIST:["amb"]},
-	    {TDEV:"common_thermal_device_pch_presence", DAO_LIST:["presence"]},
-	    {TDEV:"common_thermal_device_pch_temperature", DAO_LIST:["temperature"]},
-	    {TDEV:"common_thermal_device_psu_presence", DAO_LIST:["presence"]},
-	    {TDEV:"common_thermal_device_psu_inlet", DAO_LIST:["inlet"]}
-    ];
 	var thermal_device_dao_ops = [
       {DISPLAY:"NA", NAME:"NA"},
 	  {DISPLAY:">=", NAME:"OPS_GE"},
@@ -47,40 +39,47 @@
 	  {DISPLAY:"11", NAME:"11"},
 	  {DISPLAY:"12", NAME:"12"},
 	  {DISPLAY:"13", NAME:"13"}
-	];
+		];
+    var thermal_devices_dao_keyprefix = [
+	    {TDEV:"na", DAO_LIST:[], OPS_LIST:[], INST_LIST:[]},
+	    {TDEV:"common_thermal_device_event_status", DAO_LIST:["ipmi_ready", "power_good", "post_init", "post_completed", "dp_ready"], OPS_LIST:thermal_device_dao_ops, INST_LIST:thermal_device_dao_inst},
+	    {TDEV:"common_thermal_device_ambient", DAO_LIST:["amb"], OPS_LIST:thermal_device_dao_ops, INST_LIST:thermal_device_dao_inst},
+	    {TDEV:"common_thermal_device_pch_presence", DAO_LIST:["presence"], OPS_LIST:thermal_device_dao_ops, INST_LIST:thermal_device_dao_inst},
+	    {TDEV:"common_thermal_device_pch_temperature", DAO_LIST:["temperature"], OPS_LIST:thermal_device_dao_ops, INST_LIST:thermal_device_dao_inst},
+	    {TDEV:"common_thermal_device_psu_presence", DAO_LIST:["presence"], OPS_LIST:thermal_device_dao_ops, INST_LIST:thermal_device_dao_inst},
+	    {TDEV:"common_thermal_device_psu_inlet", DAO_LIST:["inlet"], OPS_LIST:thermal_device_dao_ops, INST_LIST:thermal_device_dao_inst}
+    ];
+
     var dialog_cubic_equation = $("#dialog_cubic_equation").dialog({
       autoOpen: false,
-      title: "Algorithm Cubic Equation",
+      title: "Algorithm Cubic Equation [ R=A*(X^3) + B*(X^2) + C*(X^1) + D*(X^0) ]",
       modal: true,
+      position:{my:"left top", at: "left top"},
       buttons:[
         {text: "Create", click: function() {
-		  //var dao = {};
-		  
 		  dao.conds=[];
-		  var groups = $("#condition_groups\\[\\]");
-		  var items = $("#condition_items\\[\\]");
-		  var ops_list = $("#condition_ops\\[\\]");
-		  var inst_list =$("#condition_inst\\[\\]");
-		  var text_list =$("#condition_text\\[\\]");
-		  for(i=0;i<groups.length;i++){
-			var group = groups[i];
-			var item = items[i];
-			var ops = ops_list[i];
-			var inst = inst_list[i];
-			var text = text_list[i];
-			var cond = {};
-			cond.keyprefix=group.value + "." + item.value;
-			cond.instance = inst.value;
-			cond.ops = ops.value;
-			cond.value = text.value;
-			dao.conds.push(cond);
-		  }
-		  
+		  var cond_list = $( "#place_holder_conditions" ).add_condition("outputjson");
+		  console.log("cond_list Begin");
+		  console.log(cond_list);
+		  console.log("cond_list End");
+		  dao.conds=cond_list;
 		  dao.params={};
+		  dao.params.x={};
+		  dao.params.r={};
+		  var group_x = $("#x_group");
+		  var item_x = $("#x_item");
+		  var inst_x = $("#x_inst");
+		  var group_r = $("#r_group");
+		  var item_r = $("#r_item");
+		  var inst_r = $("#r_inst");
+		  dao.params.x.keyprefix = group_x.val() + "." + item_x.val();
+		  dao.params.x.inst = inst_x.val();
 		  dao.params.a=$("#field_a").val();
 		  dao.params.b=$("#field_b").val();
 		  dao.params.c=$("#field_c").val();
 		  dao.params.d=$("#field_d").val();
+		  dao.params.r.keyprefix = group_r.val() + "." + item_r.val();
+		  dao.params.r.inst = inst_r.val();
 		  console.log(dao);
 	}},
         {text: "Cancel", click: function() {$(this).dialog("close");}}
@@ -91,8 +90,10 @@
       dialog_cubic_equation.dialog("open");
 	  $( "#place_holder_conditions" ).add_condition();
 	  $( "#place_holder_conditions" ).add_condition("option", "dao", thermal_devices_dao_keyprefix);
-	  $( "#place_holder_conditions" ).add_condition("option", "ops", thermal_device_dao_ops);
-	  $( "#place_holder_conditions" ).add_condition("option", "inst", thermal_device_dao_inst);
+          $( "#place_holder_parameters" ).add_parameter_cubic_equation();
+          $( "#place_holder_parameters" ).add_parameter_cubic_equation("option", "dao", thermal_devices_dao_keyprefix);
+          $( "#place_holder_result" ).add_result();
+          $( "#place_holder_result" ).add_result("option", "dao", thermal_devices_dao_keyprefix);
     });
 //    $( "#sortable" ).sortable();
 //    $( "#sortable" ).enableSelection();
@@ -105,27 +106,12 @@
   </div>
   <div id="dialog_cubic_equation">
     <form id="create_new_cubic_equation">
-    <label>Conditions</label>
+    <label>Conditions</label></br>
     <div id="place_holder_conditions"></div>
     </br><label>Parameters</label></br>
-      <table>
-        <tr>
-          <td>X</td><td><input id="field_x"/></td>
-	</tr>
-        <tr>
-          <td>A</td><td><input id="field_a"/></td>
-	</tr>
-        <tr>
-          <td>B</td><td><input id="field_b"/></td>
-	</tr>
-        <tr>
-          <td>C</td><td><input id="field_c"/></td>
-	</tr>
-        <tr>
-          <td>D</td><td><input id="field_d"/></td>
-	</tr>
-      </table>
+    <div id="place_holder_parameters"></div>
       <label>Result</label></br>
+    <div id="place_holder_result"></div>
       <label>Fan Map</label></br>
     </form>
   </div>
