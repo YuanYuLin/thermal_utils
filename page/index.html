@@ -4,7 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Thermal Forms</title>
-  <link rel="stylesheet" type="text/css" href="/js/jquery-ui.css">
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link rel="stylesheet" type="text/css" href="/css/jquery-ui.css">
   <style>
   #sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }
   #sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px; }
@@ -15,33 +16,72 @@
   <script src="/js/widget-add_condition.js"></script>
   <script>
   $( function() {
-    var dao =[];
+    var dao = {};
     var thermal_devices_dao_keyprefix = [
 	    {TDEV:"na", DAO_LIST:[]},
-	    {TDEV:"common_thermal_device_event_status", DAO_LIST:["ipmi_ready", "power_good", "power_init", "post_completed", "dp_ready"]},
+	    {TDEV:"common_thermal_device_event_status", DAO_LIST:["ipmi_ready", "power_good", "post_init", "post_completed", "dp_ready"]},
 	    {TDEV:"common_thermal_device_ambient", DAO_LIST:["amb"]},
 	    {TDEV:"common_thermal_device_pch_presence", DAO_LIST:["presence"]},
 	    {TDEV:"common_thermal_device_pch_temperature", DAO_LIST:["temperature"]},
 	    {TDEV:"common_thermal_device_psu_presence", DAO_LIST:["presence"]},
 	    {TDEV:"common_thermal_device_psu_inlet", DAO_LIST:["inlet"]}
     ];
-    var thermal_devices_dao_inst = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    function add_dropdown_list_conditions() {
-    }
-
+	var thermal_device_dao_ops = [
+      {DISPLAY:"NA", NAME:"NA"},
+	  {DISPLAY:">=", NAME:"OPS_GE"},
+	  {DISPLAY:"<=", NAME:"OPS_LE"},
+	  {DISPLAY:"==", NAME:"OPS_EQ"}
+	];
+	var thermal_device_dao_inst = [
+	  {DISPLAY:"NA", NAME:"NA"},
+	  {DISPLAY:"1", NAME:"1"},
+	  {DISPLAY:"2", NAME:"2"},
+	  {DISPLAY:"3", NAME:"3"},
+	  {DISPLAY:"4", NAME:"4"},
+	  {DISPLAY:"5", NAME:"5"},
+	  {DISPLAY:"6", NAME:"6"},
+	  {DISPLAY:"7", NAME:"7"},
+	  {DISPLAY:"8", NAME:"8"},
+	  {DISPLAY:"9", NAME:"9"},
+	  {DISPLAY:"10", NAME:"10"},
+	  {DISPLAY:"11", NAME:"11"},
+	  {DISPLAY:"12", NAME:"12"},
+	  {DISPLAY:"13", NAME:"13"}
+	];
     var dialog_cubic_equation = $("#dialog_cubic_equation").dialog({
       autoOpen: false,
       title: "Algorithm Cubic Equation",
-      width:800,
       modal: true,
-      show: { effect: "blind", duration: 800 },
       buttons:[
         {text: "Create", click: function() {
-          var condition_list = $("#conditions\\[\\]");
-          console.log(condition_list.length);
-          for(i=0;i<condition_list.length;i++){
-            console.log(condition_list[i].value);
-	  }
+		  //var dao = {};
+		  
+		  dao.conds=[];
+		  var groups = $("#condition_groups\\[\\]");
+		  var items = $("#condition_items\\[\\]");
+		  var ops_list = $("#condition_ops\\[\\]");
+		  var inst_list =$("#condition_inst\\[\\]");
+		  var text_list =$("#condition_text\\[\\]");
+		  for(i=0;i<groups.length;i++){
+			var group = groups[i];
+			var item = items[i];
+			var ops = ops_list[i];
+			var inst = inst_list[i];
+			var text = text_list[i];
+			var cond = {};
+			cond.keyprefix=group.value + "." + item.value;
+			cond.instance = inst.value;
+			cond.ops = ops.value;
+			cond.value = text.value;
+			dao.conds.push(cond);
+		  }
+		  
+		  dao.params={};
+		  dao.params.a=$("#field_a").val();
+		  dao.params.b=$("#field_b").val();
+		  dao.params.c=$("#field_c").val();
+		  dao.params.d=$("#field_d").val();
+		  console.log(dao);
 	}},
         {text: "Cancel", click: function() {$(this).dialog("close");}}
       ]
@@ -49,10 +89,13 @@
     $("#create_cubic_equation").button().on("click", function() {
       dialog_cubic_equation.dialog("option", "width", 800);
       dialog_cubic_equation.dialog("open");
+	  $( "#place_holder_conditions" ).add_condition();
+	  $( "#place_holder_conditions" ).add_condition("option", "dao", thermal_devices_dao_keyprefix);
+	  $( "#place_holder_conditions" ).add_condition("option", "ops", thermal_device_dao_ops);
+	  $( "#place_holder_conditions" ).add_condition("option", "inst", thermal_device_dao_inst);
     });
-    $( "#sortable" ).sortable();
-    $( "#sortable" ).enableSelection();
-    $( "#place_holder_conditions" ).add_condition();
+//    $( "#sortable" ).sortable();
+//    $( "#sortable" ).enableSelection();
   } );
   </script>
 </head>
@@ -60,32 +103,33 @@
   <div class="algorithm_widget">
     <button id="create_cubic_equation">cubic equation</button>
   </div>
-  <div id="dialog_cubic_equation"  style="width:800px">
-    <form>
+  <div id="dialog_cubic_equation">
+    <form id="create_new_cubic_equation">
     <label>Conditions</label>
     <div id="place_holder_conditions"></div>
     </br><label>Parameters</label></br>
       <table>
         <tr>
-          <td>X</td><td></td>
+          <td>X</td><td><input id="field_x"/></td>
 	</tr>
         <tr>
-          <td>A</td><td></td>
+          <td>A</td><td><input id="field_a"/></td>
 	</tr>
         <tr>
-          <td>B</td><td></td>
+          <td>B</td><td><input id="field_b"/></td>
 	</tr>
         <tr>
-          <td>C</td><td></td>
+          <td>C</td><td><input id="field_c"/></td>
 	</tr>
         <tr>
-          <td>D</td><td></td>
+          <td>D</td><td><input id="field_d"/></td>
 	</tr>
       </table>
       <label>Result</label></br>
       <label>Fan Map</label></br>
     </form>
   </div>
+  <!--
 <ul id="sortable">
   <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 1</li>
   <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 2</li>
@@ -95,7 +139,7 @@
   <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 6</li>
   <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 7</li>
 </ul>
- 
+ -->
  
 </body>
 </html>
