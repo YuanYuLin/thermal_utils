@@ -1,0 +1,1 @@
+custom-widget/widget-add_parameter_cubic_equation.js
