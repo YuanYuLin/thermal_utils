@@ -42,6 +42,8 @@ $.widget("custom.add_parameter_cubic_equation",{
     select_inst_x.empty()
     var _dao_list = this.options.dao;
     var selected_value = select_group_x.val();
+    var i = 0;
+    var j = 0;
     for(i=0;i<_dao_list.length;i++) {
       var _dao = _dao_list[i];
       if(selected_value == _dao.TDEV) {
@@ -124,6 +126,7 @@ $.widget("custom.add_parameter_cubic_equation",{
     var select_group_x = $("#x_group");
 	select_group_x.empty();
     var _dao_list = this.options.dao;
+    var i = 0;
     for(i=0;i<_dao_list.length;i++) {
         var _dao = _dao_list[i];
         var option = $("<option />");

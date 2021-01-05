@@ -22,93 +22,107 @@ $.widget("custom.list_algorithm",{
 	  }
 	  return "OPS not supportted!";
   },
-  create_record_cubic_equation: function(root_element, item) {
+  _create_record_cubic_equation: function(row, item) {
+	  var _type = item.type;
 	  var _conds = item.conds;
 	  var _params = item.params;
 	  var _result = item.result;
 
+	  var col_type = $("<td/>");
 	  var _type_label = $("<label/>");
-	  _type_label.appendTo(root_element);
-	  var ul_cond = $("<ul/>");
-	  ul_cond.appendTo(root_element);
-	  for(i=0;i<_conds.length;i++) {
-		  var cond = _conds[i];
-		  var li_cond = $("<li/>");
-		  li_cond.html(cond.keyprefix + "." + cond.instance + this.ops2symbo(cond.ops) + cond.value);
-		  li_cond.appendTo(ul_cond);
+	  _type_label.html(_type);
+	  _type_label.appendTo(col_type);
+	  col_type.appendTo(row);
+
+	  var col_cond = $("<td/>");
+	  var x = 0;
+	  for(x=0;x<_conds.length;x++) {
+		  var cond = _conds[x];
+		  var label_cond = $("<label/>");
+		  label_cond.html("<br/>" + cond.keyprefix + "." + cond.instance + this.ops2symbo(cond.ops) + cond.value);
+		  label_cond.appendTo(col_cond);
 	  }
-	  for(i=0;i<_params.length;i++) {
-		  var param = _params[i];
-		  var label_x = $("<label/>");
-		  label_x.html("X:"+param.x.keyprefix + "." + param.x.inst);
-		  label_x.appendTo(root_element);
-		  var label_a = $("<label/>");
-		  label_a.html("A:"+param.a);
-		  label_a.appendTo(root_element);
-		  var label_b = $("<label/>");
-		  label_b.html("B:"+param.b);
-		  label_b.appendTo(root_element);
-		  var label_c = $("<label/>");
-		  label_c.html("C:"+param.c);
-		  label_c.appendTo(root_element);
-		  var label_d = $("<label/>");
-		  label_d.html("D:"+param.d);
-		  label_d.appendTo(root_element);
-	  }
+	  col_cond.appendTo(row);
+
+	  var col_param = $("<td/>");
+	  var label_x = $("<label/>");
+	  label_x.html("<br/>X:"+_params.x.keyprefix + "." + _params.x.inst);
+	  label_x.appendTo(col_param);
+	  var label_a = $("<label/>");
+	  label_a.html("<br/>A:"+_params.a);
+	  label_a.appendTo(col_param);
+	  var label_b = $("<label/>");
+	  label_b.html("<br/>B:"+_params.b);
+	  label_b.appendTo(col_param);
+	  var label_c = $("<label/>");
+	  label_c.html("<br/>C:"+_params.c);
+	  label_c.appendTo(col_param);
+	  var label_d = $("<label/>");
+	  label_d.html("<br/>D:"+_params.d);
+	  label_d.appendTo(col_param);
+	  col_param.appendTo(row);
+
+	  var col_result = $("<td/>");
 	  var label_r = $("<label/>");
 	  label_r.html("R:" + _result.keyprefix + "." + _result.inst);
-	  label_r.appendTo(root_element);
+	  label_r.appendTo(col_result);
+	  col_result.appendTo(row);
+
+	  var col_action =$("<td/>");
+	  col_action.appendTo(row);
+  },
+  _create_caption: function(table) {
+	  var tr = $("<tr/>");
+
+	  var th_type = $("<th/>");
+	  th_type.html("Type");
+	  th_type.appendTo(tr);
+
+	  var th_conds = $("<th/>");
+	  th_conds.html("Condition List");
+	  th_conds.appendTo(tr);
+
+	  var th_params = $("<th/>");
+	  th_params.html("Parameter List");
+	  th_params.appendTo(tr);
+
+	  var th_result = $("<th/>");
+	  th_result.html("Result");
+	  th_result.appendTo(tr);
+
+	  var th_action = $("<th/>");
+	  th_action.html("Action List");
+	  th_action.appendTo(tr);
+
+	  tr.appendTo(table);
+
   },
   render_list: function() {
-    var ul = $("#algorithm_list");
-	ul.empty();
+    var table = $("#algorithm_list");
+	table.empty();
+	  this._create_caption(table);
+
 	var _dao = this.options.dao;
-	
+	  var i = 0;
     for(i=0;i<_dao.length;i++) {
-      var item = _dao[i];
-	  console.log(item.type);
-	  console.log(item.conds);
-	  console.log(item.params);
-	  console.log(item.result);
-	  var _type = item.type;
-  	  var root_element = $("<li/>");
-	  var label_type = $("<label/>");
-	  label_type.html(_type);
-	  label_type.appendTo(root_element);
-	  switch(_type) {
-		  case 'cubic_equation':
-		  this.create_record_cubic_equation(root_element, item);
-		  break;
+      var obj = _dao[i];
+	  var _type = obj.type;
+  	  var row = $("<tr/>");
+	  if(_type === "cubic_equation") {
+		  this._create_record_cubic_equation(row, obj);
 	  }
 
-	  root_element.appendTo(ul);
+	  row.appendTo(table);
     }
-/*
-    for(i=0;i<_dao.length;i++) {
-      var item = _dao[i];
-	  console.log(item);
-      var li=$("<li/>");
-	  var up=$("<label/>");
-	  var down=$("<label/>");
-	  var label=$("<label/>");
-	  up.attr("class", "ui-icon ui-icon-triangle-1-n");
-	  up.html("up");
-	  down.attr("class", "ui-icon ui-icon-triangle-1-s");
-	  down.html("down");
-	  li.attr("class", "ui-state-default");
-	  up.appendTo(li);
-	  down.appendTo(li);
-	  label.html(item.type);
-	  label.appendTo(li);
-	  li.appendTo(ul);
-	}
-*/
+	  this._create_caption(table);
   },
   _create: function() {
-	  var ul=$("<ul/>");
-	  ul.attr("id", "algorithm_list");
-	  ul.empty();
-	  ul.appendTo(this.element);
+	  var table=$("<table/>");
+	  table.attr("id", "algorithm_list");
+	  table.empty();
+
+	  table.appendTo(this.element);
+	  this.render_list();
   },
  _setOption: function(key, value) {
 	if(key === "dao") {

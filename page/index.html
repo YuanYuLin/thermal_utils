@@ -100,6 +100,12 @@
           $( "#cubic_equation_place_holder_result" ).add_result();
           $( "#cubic_equation_place_holder_result" ).add_result("option", "dao", thermal_devices_dao_keyprefix);
     });
+    $("#refresh_list").button().on("click", function() {
+      console.log(g_dao);
+      $( "#place_holder_algorithm_list").list_algorithm("reset_widget");
+		  
+      $( "#place_holder_algorithm_list").list_algorithm("option", "dao", g_dao);
+    });
 	$( document ).ready(function() {
 		  $( "#place_holder_algorithm_list" ).list_algorithm();
 		  $( "#place_holder_algorithm_list" ).list_algorithm("option", "dao", g_dao);
@@ -110,6 +116,7 @@
 <body>
   <div class="algorithm_widget">
     <button id="create_cubic_equation">cubic equation</button>
+    <button id="refresh_list">refresh</button>
   </div>
   <div id="place_holder_algorithm_list"></div>
 

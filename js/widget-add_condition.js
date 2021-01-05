@@ -24,6 +24,7 @@ $.widget("custom.add_condition",{
     var ops_list = $("#condition_ops\\[\\]");
     var inst_list =$("#condition_inst\\[\\]");
     var text_list =$("#condition_text\\[\\]");
+    var i = 0;
     for(i=0;i<groups.length;i++){
       var group = groups[i];
       var item = items[i];
@@ -54,6 +55,8 @@ $.widget("custom.add_condition",{
 	condition_select4.empty()
 	var selected_value = condition_select.val();
     var _dao_list = this.options.dao;
+    var i = 0;
+    var j = 0;
     for(i=0;i<_dao_list.length;i++) {
       var _dao = _dao_list[i];
       if(selected_value == _dao.TDEV) {
@@ -120,6 +123,7 @@ condition_text.width(30);
    condition_text.appendTo(sep);	
 
 var _dao_list = this.options.dao;
+    var i = 0;
     for(i=0;i<_dao_list.length;i++){
 	  var _dao = _dao_list[i];
       var condition_option = $("<option />");
