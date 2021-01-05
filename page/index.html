@@ -6,18 +6,20 @@
   <title>Thermal Forms</title>
   <link rel="stylesheet" type="text/css" href="/css/jquery-ui.css">
   <style>
-  #sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }
-  #sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px; }
-  #sortable li span { position: absolute; margin-left: -1.3em; }
+  #algorithm_list { list-style-type: none; margin: 0; padding: 0; width: 70%; }
+  #algorithm_list li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px; }
+  #algorithm_list li ul { list-style-type: none; margin: 0; padding: 0; width: 70%; }
+  #algorithm_list li ul li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 3 em; font-size: 1em; height: 15px; }
   </style>
   <script src="/js/jquery.js"></script>
   <script src="/js/jquery-ui.js"></script>
   <script src="/js/widget-add_condition.js"></script>
   <script src="/js/widget-add_parameter_cubic_equation.js"></script>
   <script src="/js/widget-add_result.js"></script>
+  <script src="/js/widget-list_algorithm.js"></script>
   <script>
   $( function() {
-    var dao = {};
+    var g_dao = [];
 	var thermal_device_dao_ops = [
       {DISPLAY:"NA", NAME:"NA"},
 	  {DISPLAY:">=", NAME:"OPS_GE"},
@@ -57,46 +59,51 @@
       position:{my:"left top", at: "left top"},
       buttons:[
         {text: "Create", click: function() {
-		  dao.conds=[];
-		  var cond_list = $( "#place_holder_conditions" ).add_condition("outputjson");
-		  console.log("cond_list Begin");
-		  console.log(cond_list);
-		  console.log("cond_list End");
-		  dao.conds=cond_list;
-		  dao.params={};
-		  dao.params.x={};
-		  dao.params.r={};
-		  var group_x = $("#x_group");
-		  var item_x = $("#x_item");
-		  var inst_x = $("#x_inst");
-		  var group_r = $("#r_group");
-		  var item_r = $("#r_item");
-		  var inst_r = $("#r_inst");
-		  dao.params.x.keyprefix = group_x.val() + "." + item_x.val();
-		  dao.params.x.inst = inst_x.val();
-		  dao.params.a=$("#field_a").val();
-		  dao.params.b=$("#field_b").val();
-		  dao.params.c=$("#field_c").val();
-		  dao.params.d=$("#field_d").val();
-		  dao.params.r.keyprefix = group_r.val() + "." + item_r.val();
-		  dao.params.r.inst = inst_r.val();
-		  console.log(dao);
+		  obj={};
+		  var cond_list = $( "#cubic_equation_place_holder_conditions" ).add_condition("outputjson");
+		  var param_list = $( "#cubic_equation_place_holder_parameters" ).add_parameter_cubic_equation("outputjson");
+		  var result = $( "#cubic_equation_place_holder_result" ).add_result("outputjson");
+
+		  obj.type = "cubic_equation";
+		  obj.conds=cond_list;
+		  obj.params= param_list;
+		  obj.result = result;
+
+		  g_dao.push(obj);		  
+		  
+		  $( "#cubic_equation_place_holder_conditions" ).add_condition("reset_widget");
+		  $( "#cubic_equation_place_holder_parameters" ).add_parameter_cubic_equation("reset_widget");
+		  $( "#cubic_equation_place_holder_result" ).add_result("reset_widget");
+		  $( "#place_holder_algorithm_list").list_algorithm("reset_widget");
+		  
+		  $( "#place_holder_algorithm_list").list_algorithm("option", "dao", g_dao);
+		  $(this).dialog("close");
 	}},
-        {text: "Cancel", click: function() {$(this).dialog("close");}}
+        {text: "Cancel", click: function() {
+		  $( "#cubic_equation_place_holder_conditions" ).add_condition("reset_widget");
+		  $( "#cubic_equation_place_holder_parameters" ).add_parameter_cubic_equation("reset_widget");
+		  $( "#cubic_equation_place_holder_result" ).add_result("reset_widget");
+		  $( "#place_holder_algorithm_list").list_algorithm("reset_widget");
+		  
+		  $( "#place_holder_algorithm_list").list_algorithm("option", "dao", g_dao);
+		  $(this).dialog("close");
+		}}
       ]
     });
     $("#create_cubic_equation").button().on("click", function() {
       dialog_cubic_equation.dialog("option", "width", 800);
       dialog_cubic_equation.dialog("open");
-	  $( "#place_holder_conditions" ).add_condition();
-	  $( "#place_holder_conditions" ).add_condition("option", "dao", thermal_devices_dao_keyprefix);
-          $( "#place_holder_parameters" ).add_parameter_cubic_equation();
-          $( "#place_holder_parameters" ).add_parameter_cubic_equation("option", "dao", thermal_devices_dao_keyprefix);
-          $( "#place_holder_result" ).add_result();
-          $( "#place_holder_result" ).add_result("option", "dao", thermal_devices_dao_keyprefix);
+	  $( "#cubic_equation_place_holder_conditions" ).add_condition();
+	  $( "#cubic_equation_place_holder_conditions" ).add_condition("option", "dao", thermal_devices_dao_keyprefix);
+          $( "#cubic_equation_place_holder_parameters" ).add_parameter_cubic_equation();
+          $( "#cubic_equation_place_holder_parameters" ).add_parameter_cubic_equation("option", "dao", thermal_devices_dao_keyprefix);
+          $( "#cubic_equation_place_holder_result" ).add_result();
+          $( "#cubic_equation_place_holder_result" ).add_result("option", "dao", thermal_devices_dao_keyprefix);
     });
-//    $( "#sortable" ).sortable();
-//    $( "#sortable" ).enableSelection();
+	$( document ).ready(function() {
+		  $( "#place_holder_algorithm_list" ).list_algorithm();
+		  $( "#place_holder_algorithm_list" ).list_algorithm("option", "dao", g_dao);
+	});
   } );
   </script>
 </head>
@@ -104,28 +111,20 @@
   <div class="algorithm_widget">
     <button id="create_cubic_equation">cubic equation</button>
   </div>
+  <div id="place_holder_algorithm_list"></div>
+
   <div id="dialog_cubic_equation">
     <form id="create_new_cubic_equation">
-    <label>Conditions</label></br>
-    <div id="place_holder_conditions"></div>
-    </br><label>Parameters</label></br>
-    <div id="place_holder_parameters"></div>
-      <label>Result</label></br>
-    <div id="place_holder_result"></div>
-      <label>Fan Map</label></br>
+      </br><label>Conditions</label>
+      </br><div id="cubic_equation_place_holder_conditions"></div>
+      </br><label>Parameters</label>
+      </br><div id="cubic_equation_place_holder_parameters"></div>
+      </br><label>Result</label>
+      </br><div id="cubic_equation_place_holder_result"></div>
+      </br><label>Fan Map</label>
+      </br><div id="cubic_equation_place_holder_fan_map"></div>
     </form>
   </div>
-  <!--
-<ul id="sortable">
-  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 1</li>
-  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 2</li>
-  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 3</li>
-  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 4</li>
-  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 5</li>
-  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 6</li>
-  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 7</li>
-</ul>
- -->
- 
+
 </body>
 </html>
