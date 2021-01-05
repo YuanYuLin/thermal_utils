@@ -7,14 +7,15 @@ $.widget("custom.add_condition",{
   _create: function() {
     this.add_more_condition=$("<a>", {
       text: "+"
-    })
-    .appendTo(this.element)
-    .button();
+    }).appendTo(this.element).button();
+	
+	var container = $("<div/>");
+	container.attr("id", "conditions_container");
+	container.appendTo(this.element);
 
     this._on(this.add_more_condition, {
       click: "add_a_condition"
     });
-    console.log("Create \n");
   },
   outputjson:function() {
     var cond_list = [];
@@ -38,8 +39,11 @@ $.widget("custom.add_condition",{
     }
     return cond_list;
   },
+  reset_widget: function() {
+    this.options.condition_count = 0;
+	$("#conditions_container").empty();
+  },
   change_group: function(event){
-    console.log(this);
 	var parentid = event.target.parentElement.id;
 	var condition_select = $("#" + parentid + " > #condition_groups\\[\\]");
 	var condition_select2 = $("#" + parentid + " > #condition_items\\[\\]");
@@ -89,7 +93,7 @@ $.widget("custom.add_condition",{
 	 });
  },
  add_a_condition: function(event){
-    console.log("Add condition2\n");
+    var container = $("#conditions_container");
     var sep = $("<div/>");
 	sep.attr("id", "condition_container" + this.options.condition_count);
 	this.options.condition_count+=1;
@@ -108,7 +112,7 @@ condition_select4.attr("id", "condition_inst[]");
 var condition_text = $("<input/>");
 condition_text.attr("id", "condition_text[]");
 condition_text.width(30);
-    sep.appendTo(this.element);
+    sep.appendTo(container);
    condition_select.appendTo(sep);
    condition_select4.appendTo(sep);	
    condition_select2.appendTo(sep);

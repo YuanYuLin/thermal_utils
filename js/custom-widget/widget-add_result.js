@@ -4,6 +4,19 @@ $.widget("custom.add_result",{
 	  condition_count:0,
 	  test:'test'
   },
+  outputjson: function() {
+	obj = {};
+    var group_r = $("#r_group");
+    var item_r = $("#r_item");
+    var inst_r = $("#r_inst");
+	obj.keyprefix = group_r.val() + "." + item_r.val();
+	obj.inst = inst_r.val();
+	return obj;
+  },
+  reset_widget: function() {
+    var item_r = $("#r_item");
+    item_r.val('');
+  },
   _create: function() {
     var sep_r = $("<div/>");
     var label_r = $("<label/>");

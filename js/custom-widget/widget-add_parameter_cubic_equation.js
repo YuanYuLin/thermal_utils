@@ -4,8 +4,37 @@ $.widget("custom.add_parameter_cubic_equation",{
 	  condition_count:0,
 	  test:'test'
   },
+  outputjson:function() {
+    params={};
+    params.x={};
+
+    var group_x = $("#x_group");
+    var item_x = $("#x_item");
+    var inst_x = $("#x_inst");
+    var f_a =$("#field_a");
+    var f_b =$("#field_b");
+    var f_c =$("#field_c");
+    var f_d =$("#field_d");
+
+    params.x.keyprefix = group_x.val() + "." + item_x.val();
+    params.x.inst = inst_x.val();
+    params.a=f_a.val();
+    params.b=f_b.val();
+    params.c=f_c.val();
+    params.d=f_d.val();
+	return params;
+  },
+  reset_widget: function() {
+    var f_a =$("#field_a");
+	f_a.val('');
+    var f_b =$("#field_b");
+	f_b.val('');
+    var f_c =$("#field_c");
+	f_c.val('');
+    var f_d =$("#field_d");
+	f_d.val('');
+  },
   change_group: function(event) {
-      console.log(event);
     var select_group_x = $("#x_group");
     var select_sub_item_x = $("#x_item");
     var select_inst_x = $("#x_inst");
@@ -88,12 +117,12 @@ $.widget("custom.add_parameter_cubic_equation",{
     input_d.appendTo(sep_d);
     sep_d.appendTo(this.element);
 
-    console.log("Create \n");
   },
  _setOption: function(key, value) {
 	if(key === "dao") {
 		this.options.dao = value;
     var select_group_x = $("#x_group");
+	select_group_x.empty();
     var _dao_list = this.options.dao;
     for(i=0;i<_dao_list.length;i++) {
         var _dao = _dao_list[i];
