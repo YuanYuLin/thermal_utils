@@ -46,7 +46,7 @@ $.widget("custom.add_parameter_cubic_equation",{
     var j = 0;
     for(i=0;i<_dao_list.length;i++) {
       var _dao = _dao_list[i];
-      if(selected_value == _dao.TDEV) {
+      if(selected_value == _dao.NAME) {
         for(j=0;j<_dao.DAO_LIST.length;j++) {
           item = _dao.DAO_LIST[j];
           var option = $("<option />");
@@ -130,8 +130,8 @@ $.widget("custom.add_parameter_cubic_equation",{
     for(i=0;i<_dao_list.length;i++) {
         var _dao = _dao_list[i];
         var option = $("<option />");
-        option.html(_dao.TDEV);
-        option.val(_dao.TDEV);
+        option.html(_dao.DISPLAY);
+        option.val(_dao.NAME);
         option.appendTo(select_group_x);
     }
 	}

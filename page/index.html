@@ -5,12 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Thermal Forms</title>
   <link rel="stylesheet" type="text/css" href="/css/jquery-ui.css">
-  <style>
-  #algorithm_list { list-style-type: none; margin: 0; padding: 0; width: 70%; }
-  #algorithm_list li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px; }
-  #algorithm_list li ul { list-style-type: none; margin: 0; padding: 0; width: 70%; }
-  #algorithm_list li ul li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 3 em; font-size: 1em; height: 15px; }
-  </style>
   <script src="/js/jquery.js"></script>
   <script src="/js/jquery-ui.js"></script>
   <script src="/js/widget-add_condition.js"></script>
@@ -19,15 +13,12 @@
   <script src="/js/widget-list_algorithm.js"></script>
   <script>
   $( function() {
-    var g_dao = [];
-	var thermal_device_dao_ops = [
-      {DISPLAY:"NA", NAME:"NA"},
+	var default_ops = [
+      {DISPLAY:"==", NAME:"OPS_EQ"},
 	  {DISPLAY:">=", NAME:"OPS_GE"},
-	  {DISPLAY:"<=", NAME:"OPS_LE"},
-	  {DISPLAY:"==", NAME:"OPS_EQ"}
+	  {DISPLAY:"<=", NAME:"OPS_LE"}
 	];
-	var thermal_device_dao_inst = [
-	  {DISPLAY:"NA", NAME:"NA"},
+	var default_inst = [
 	  {DISPLAY:"1", NAME:"1"},
 	  {DISPLAY:"2", NAME:"2"},
 	  {DISPLAY:"3", NAME:"3"},
@@ -41,15 +32,16 @@
 	  {DISPLAY:"11", NAME:"11"},
 	  {DISPLAY:"12", NAME:"12"},
 	  {DISPLAY:"13", NAME:"13"}
-		];
-    var thermal_devices_dao_keyprefix = [
-	    {TDEV:"na", DAO_LIST:[], OPS_LIST:[], INST_LIST:[]},
-	    {TDEV:"common_thermal_device_event_status", DAO_LIST:["ipmi_ready", "power_good", "post_init", "post_completed", "dp_ready"], OPS_LIST:thermal_device_dao_ops, INST_LIST:thermal_device_dao_inst},
-	    {TDEV:"common_thermal_device_ambient", DAO_LIST:["amb"], OPS_LIST:thermal_device_dao_ops, INST_LIST:thermal_device_dao_inst},
-	    {TDEV:"common_thermal_device_pch_presence", DAO_LIST:["presence"], OPS_LIST:thermal_device_dao_ops, INST_LIST:thermal_device_dao_inst},
-	    {TDEV:"common_thermal_device_pch_temperature", DAO_LIST:["temperature"], OPS_LIST:thermal_device_dao_ops, INST_LIST:thermal_device_dao_inst},
-	    {TDEV:"common_thermal_device_psu_presence", DAO_LIST:["presence"], OPS_LIST:thermal_device_dao_ops, INST_LIST:thermal_device_dao_inst},
-	    {TDEV:"common_thermal_device_psu_inlet", DAO_LIST:["inlet"], OPS_LIST:thermal_device_dao_ops, INST_LIST:thermal_device_dao_inst}
+	];
+    var thermal_algorithm_dao = [];
+    var thermal_devices_dao = [
+	    {DISPLAY:"na", NAME:"", DAO_LIST:[], OPS_LIST:[], INST_LIST:[]},
+	    {DISPLAY:"event_status", NAME:"common_thermal_device_event_status", DAO_LIST:["ipmi_ready", "power_good", "post_init", "post_completed", "dp_ready"], OPS_LIST:default_ops, INST_LIST:default_inst},
+	    {DISPLAY:"ambient", NAME:"common_thermal_device_ambient", DAO_LIST:["amb"], OPS_LIST:default_ops, INST_LIST:default_inst},
+	    {DISPLAY:"pch_presence", NAME:"common_thermal_device_pch_presence", DAO_LIST:["presence"], OPS_LIST:default_ops, INST_LIST:default_inst},
+	    {DISPLAY:"pch_temperature", NAME:"common_thermal_device_pch_temperature", DAO_LIST:["temperature"], OPS_LIST:default_ops, INST_LIST:default_inst},
+	    {DISPLAY:"psu_presence", NAME:"common_thermal_device_psu_presence", DAO_LIST:["presence"], OPS_LIST:default_ops, INST_LIST:default_inst},
+	    {DISPLAY:"psu_inlet", NAME:"common_thermal_device_psu_inlet", DAO_LIST:["inlet"], OPS_LIST:default_ops, INST_LIST:default_inst}
     ];
 
     var dialog_cubic_equation = $("#dialog_cubic_equation").dialog({
@@ -60,8 +52,8 @@
       buttons:[
         {text: "Create", click: function() {
 		  obj={};
-		  var cond_list = $( "#cubic_equation_place_holder_conditions" ).add_condition("outputjson");
-		  var param_list = $( "#cubic_equation_place_holder_parameters" ).add_parameter_cubic_equation("outputjson");
+		  var cond_list = $("#cubic_equation_place_holder_conditions").add_condition("outputjson");
+		  var param_list = $("#cubic_equation_place_holder_parameters").add_parameter_cubic_equation("outputjson");
 		  var result = $( "#cubic_equation_place_holder_result" ).add_result("outputjson");
 
 		  obj.type = "cubic_equation";
@@ -69,23 +61,23 @@
 		  obj.params= param_list;
 		  obj.result = result;
 
-		  g_dao.push(obj);		  
+		  thermal_algorithm_dao.push(obj);		  
 		  
-		  $( "#cubic_equation_place_holder_conditions" ).add_condition("reset_widget");
-		  $( "#cubic_equation_place_holder_parameters" ).add_parameter_cubic_equation("reset_widget");
-		  $( "#cubic_equation_place_holder_result" ).add_result("reset_widget");
-		  $( "#place_holder_algorithm_list").list_algorithm("reset_widget");
+		  $("#cubic_equation_place_holder_conditions").add_condition("reset_widget");
+		  $("#cubic_equation_place_holder_parameters").add_parameter_cubic_equation("reset_widget");
+		  $("#cubic_equation_place_holder_result").add_result("reset_widget");
+		  $("#place_holder_algorithm_list").list_algorithm("reset_widget");
 		  
-		  $( "#place_holder_algorithm_list").list_algorithm("option", "dao", g_dao);
+		  $("#place_holder_algorithm_list").list_algorithm("option", "dao", thermal_algorithm_dao);
 		  $(this).dialog("close");
 	}},
         {text: "Cancel", click: function() {
-		  $( "#cubic_equation_place_holder_conditions" ).add_condition("reset_widget");
-		  $( "#cubic_equation_place_holder_parameters" ).add_parameter_cubic_equation("reset_widget");
-		  $( "#cubic_equation_place_holder_result" ).add_result("reset_widget");
-		  $( "#place_holder_algorithm_list").list_algorithm("reset_widget");
+		  $("#cubic_equation_place_holder_conditions").add_condition("reset_widget");
+		  $("#cubic_equation_place_holder_parameters").add_parameter_cubic_equation("reset_widget");
+		  $("#cubic_equation_place_holder_result").add_result("reset_widget");
+		  $("#place_holder_algorithm_list").list_algorithm("reset_widget");
 		  
-		  $( "#place_holder_algorithm_list").list_algorithm("option", "dao", g_dao);
+		  $("#place_holder_algorithm_list").list_algorithm("option", "dao", thermal_algorithm_dao);
 		  $(this).dialog("close");
 		}}
       ]
@@ -93,35 +85,43 @@
     $("#create_cubic_equation").button().on("click", function() {
       dialog_cubic_equation.dialog("option", "width", 800);
       dialog_cubic_equation.dialog("open");
-	  $( "#cubic_equation_place_holder_conditions" ).add_condition();
-	  $( "#cubic_equation_place_holder_conditions" ).add_condition("option", "dao", thermal_devices_dao_keyprefix);
-          $( "#cubic_equation_place_holder_parameters" ).add_parameter_cubic_equation();
-          $( "#cubic_equation_place_holder_parameters" ).add_parameter_cubic_equation("option", "dao", thermal_devices_dao_keyprefix);
-          $( "#cubic_equation_place_holder_result" ).add_result();
-          $( "#cubic_equation_place_holder_result" ).add_result("option", "dao", thermal_devices_dao_keyprefix);
+	  $("#cubic_equation_place_holder_conditions").add_condition();
+	  $("#cubic_equation_place_holder_conditions").add_condition("option", "dao", thermal_devices_dao);
+          $("#cubic_equation_place_holder_parameters").add_parameter_cubic_equation();
+          $("#cubic_equation_place_holder_parameters").add_parameter_cubic_equation("option", "dao", thermal_devices_dao);
+          $("#cubic_equation_place_holder_result").add_result();
+          $("#cubic_equation_place_holder_result").add_result("option", "dao", thermal_devices_dao);
     });
     $("#refresh_list").button().on("click", function() {
-      console.log(g_dao);
-      $( "#place_holder_algorithm_list").list_algorithm("reset_widget");
+      $("#place_holder_algorithm_list").list_algorithm("reset_widget");
 		  
-      $( "#place_holder_algorithm_list").list_algorithm("option", "dao", g_dao);
+      $("#place_holder_algorithm_list").list_algorithm("option", "dao", thermal_algorithm_dao);
+    });
+    $("#upload2server").button().on("click", function() {
+      console.log(thermal_algorithm_dao);
     });
 	$( document ).ready(function() {
-		  $( "#place_holder_algorithm_list" ).list_algorithm();
-		  $( "#place_holder_algorithm_list" ).list_algorithm("option", "dao", g_dao);
+		  $("#place_holder_algorithm_list").list_algorithm();
+		  $("#place_holder_algorithm_list").list_algorithm("option", "dao", thermal_algorithm_dao);
 	});
   } );
   </script>
 </head>
 <body>
-  <div class="algorithm_widget">
-    <button id="create_cubic_equation">cubic equation</button>
+
+  <fieldset>
+  <legend>Menu:</legend>
     <button id="refresh_list">refresh</button>
-  </div>
+    <button id="upload2server">upload</button>
+  </fieldset>
+  <fieldset>
+  <legend>Algorithm List:</legend>
+    <button id="create_cubic_equation">cubic equation</button>
+  </fieldset>
   <div id="place_holder_algorithm_list"></div>
 
   <div id="dialog_cubic_equation">
-    <form id="create_new_cubic_equation">
+    <form>
       </br><label>Conditions</label>
       </br><div id="cubic_equation_place_holder_conditions"></div>
       </br><label>Parameters</label>
