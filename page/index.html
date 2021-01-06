@@ -44,7 +44,54 @@
 	    {DISPLAY:"psu_inlet", NAME:"common_thermal_device_psu_inlet", DAO_LIST:["inlet"], OPS_LIST:default_ops, INST_LIST:default_inst}
     ];
 
-    var dialog_cubic_equation = $("#dialog_cubic_equation").dialog({
+    function _create_dialog_cubic_equation(el_root) {
+	    var el_sep = $("<br/>");
+	    var el_div = $("<div/>");
+	    el_div.attr("id", "dialog_cubic_equation");
+
+	    var el_label_cond = $("<label/>");
+	    el_label_cond.html("Conditions");
+	    el_label_cond.append(el_sep);
+	    el_label_cond.appendTo(el_div);
+
+	    var el_div_cond= $("<div/>");
+	    el_div_cond.attr("id", "cubic_equation_place_holder_conditions");
+	    el_div_cond.append(el_sep);
+	    el_div_cond.appendTo(el_div);
+
+	    var el_label_param = $("<label/>");
+	    el_label_param.html("Paramesters");
+	    el_label_param.append(el_sep);
+	    el_label_param.appendTo(el_div);
+
+	    var el_div_param= $("<div/>");
+	    el_div_param.attr("id", "cubic_equation_place_holder_parameters");
+	    el_div_param.append(el_sep);
+	    el_div_param.appendTo(el_div);
+
+	    var el_label_result = $("<label/>");
+	    el_label_result.html("Result");
+	    el_label_result.append(el_sep);
+	    el_label_result.appendTo(el_div);
+
+	    var el_div_result = $("<div/>");
+	    el_div_result.attr("id", "cubic_equation_place_holder_result");
+	    el_div_result.append(el_sep);
+	    el_div_result.appendTo(el_div);
+
+	    var el_label_fanmap = $("<label/>");
+	    el_label_fanmap.html("Fan Map");
+	    el_label_fanmap.append(el_sep);
+	    el_label_fanmap.appendTo(el_div);
+
+	    var el_div_fanmap = $("<div/>");
+	    el_div_fanmap.attr("id", "cubic_equation_place_holder_fan_map");
+	    el_div_fanmap.append(el_sep);
+	    el_div_fanmap.appendTo(el_div);
+
+	    el_div.appendTo(el_root);
+
+    var dialog_cubic_equation = el_div.dialog({
       autoOpen: false,
       title: "Algorithm Cubic Equation [ R=A*(X^3) + B*(X^2) + C*(X^1) + D*(X^0) ]",
       modal: true,
@@ -82,6 +129,7 @@
 		}}
       ]
     });
+
     $("#create_cubic_equation").button().on("click", function() {
       dialog_cubic_equation.dialog("option", "width", 800);
       dialog_cubic_equation.dialog("open");
@@ -92,6 +140,10 @@
           $("#cubic_equation_place_holder_result").add_result();
           $("#cubic_equation_place_holder_result").add_result("option", "dao", thermal_devices_dao);
     });
+
+    }
+    _create_dialog_cubic_equation($("#place_holder_dialog"));
+
     $("#refresh_list").button().on("click", function() {
       $("#place_holder_algorithm_list").list_algorithm("reset_widget");
 		  
@@ -108,20 +160,21 @@
   </script>
 </head>
 <body>
+  <fieldset>
+  <legend>Algorithm List:</legend>
+    <button id="create_cubic_equation">cubic equation</button>
+  </fieldset>
+
+  <div id="place_holder_algorithm_list"></div>
 
   <fieldset>
   <legend>Menu:</legend>
     <button id="refresh_list">refresh</button>
     <button id="upload2server">upload</button>
   </fieldset>
-  <fieldset>
-  <legend>Algorithm List:</legend>
-    <button id="create_cubic_equation">cubic equation</button>
-  </fieldset>
-  <div id="place_holder_algorithm_list"></div>
-
+  <div id="place_holder_dialog"></div>
+  <!--
   <div id="dialog_cubic_equation">
-    <form>
       </br><label>Conditions</label>
       </br><div id="cubic_equation_place_holder_conditions"></div>
       </br><label>Parameters</label>
@@ -130,8 +183,7 @@
       </br><div id="cubic_equation_place_holder_result"></div>
       </br><label>Fan Map</label>
       </br><div id="cubic_equation_place_holder_fan_map"></div>
-    </form>
   </div>
-
+  -->
 </body>
 </html>
